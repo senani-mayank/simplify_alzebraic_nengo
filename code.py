@@ -55,9 +55,12 @@ def incr_count( value, direction ) :
     
 #evaluate()
 def evaluate() :
+    
     global expression
     final_expression = ''
     var_map = dict()
+    if len(expression) < 3 :
+        return ''
     i = 0
     while i < len(expression) :
         sign = expression[i]
@@ -128,13 +131,14 @@ with model:
         
         html = html + '</br>' + '<h3>Expression = ' + expression + '</h3>'
         html = html + '</br>' + '<h3>Final Expression = ' + evaluate() + '</h3>'
+      
         html = html + '</br>' + '<h3>Var = ' + var + '</h3>'
         html = html + '</br>' + '<h3>Count = ' + str(count) + '</h3>'
         arm_function._nengo_html_ = html
         
-    stim_angles = nengo.Node([0.0, 0.0, 0.0])
-    angles = nengo.Ensemble(n_neurons=1500, dimensions=3)
-    arm = nengo.Node(arm_function, size_in=3)
-    nengo.Connection(stim_angles, angles)
-    nengo.Connection(angles, arm)
-    
+    inputs = nengo.Node([0.0, 0.0, 0.0])
+    ensembles = nengo.Ensemble(n_neurons=1500, dimensions=3)
+    output = nengo.Node(arm_function, size_in=3)
+    nengo.Connection(inputs, ensembles)
+    nengo.Connection(ensembles, output)
+       

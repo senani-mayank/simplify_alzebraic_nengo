@@ -61,11 +61,11 @@ def set_flag( vari, val ) :
 #variables
 
 prev_count_direction = 'd'
-
+final_expression = ''
 op_prev_direction = 'd'
 
 prev_append_dir = 'd'
-
+prev_eval_dir = 'd'
 count = 0
 
 expression = ''
@@ -111,6 +111,9 @@ def incr_count( value, direction ) :
         
 
 def append_operator( operator, direction ):
+    
+    if len(operator) != 1 :
+        return
 
     global op_prev_direction
 
@@ -126,57 +129,11 @@ def append_operator( operator, direction ):
 
 #evaluate()
 
-def evaluate() :
-
-    return 'lol'
-
-    global expression
-
-    final_expression = ''
-
-    var_map = dict()
-
-    if len(expression) < 3 :
-
-        return ''
-
-    i = 0
-
-    while i < len(expression) :
-
-        sign = expression[i]
-
-        value = int(expression[i + 1])
-
-        variable = expression[ i + 2]
-
-        
-
-        if sign == '-' :
-
-            value = -value
-
-        
-
-        if not (variable in var_map) :
-
-            var_map[ variable ] = 0
-
-            
-
-        var_map[ variable ] = var_map[ variable ] + value
-
-        i = i + 3
-
-    
-
-    for key in var_map :
-
-        final_expression = final_expression + ('+' if value >= 0 else '')  + str(var_map[key]) + key
-
-    print(expression)
-
-    return final_expression
+def evaluate( direction ) :
+    global prev_eval_dir
+    if prev_eval_dir != direction :
+        prev_eval_dir = direction
+        #evaluate logic
 
     
 
@@ -223,9 +180,8 @@ def oper_fun(t, arr ):
 
 
     t = arr[0]
-
     f = arr[1]
-
+    eval_flag = arr[2]
     
 
     if t > 0.8 and t < 0.99 :
@@ -240,7 +196,7 @@ def oper_fun(t, arr ):
     elif t> -0.3 and t < 0.0 :
         operator = ')'
         
-    elif t > -0.8 and t < -0.5 :
+    elif t > -0.9 and t < -0.5 :
         operator = '+'
 
         
@@ -255,7 +211,13 @@ def oper_fun(t, arr ):
 
         append_operator( operator, 'd' )
 
-        
+    if eval_flag > 0.8 and eval_flag < 0.9 :
+
+        evaluate( 'u' )
+
+    elif eval_flag > -0.9 and eval_flag < -0.8 :
+
+        evaluate( 'd' )
 
     return arr
 
@@ -321,11 +283,11 @@ with model:
 
         #    html = '<h3> ivar = ' + str(ivar) + ' icount = ' + str(icount) + ' itrig = ' + str(itrig) + '</h3>'
 
-        
+        global final_expression
 
         html = html + '</br>' + '<h3>Expression = ' + expression + '</h3>'
 
-        html = html + '</br>' + '<h3>Final Expression = ' + evaluate() + '</h3>'
+        html = html + '</br>' + '<h3>Final Expression = ' + final_expression + '</h3>'
 
       
 
@@ -334,31 +296,28 @@ with model:
         html = html + '</br>' + '<h3>Count = ' + str(count) + '</h3>'
 
         arm_function._nengo_html_ = html
+        return angles
 
         
-
     inputs = nengo.Node([0.0, 0.0, 0.0])
-
     ensembles = nengo.Ensemble(n_neurons=1500, dimensions=3)
-
-    output = nengo.Node(arm_function, size_in=3)
-
+    outputs = nengo.Node(arm_function, size_in=3)
     nengo.Connection(inputs, ensembles)
-
-    nengo.Connection(ensembles, output)
+    nengo.Connection(ensembles, outputs)
 
     
 
     #operator input ensemble.
 
-    op_inputs = nengo.Node( [ 0.0, 0.0 ] )
-
-    op_ensembles = nengo.Ensemble(n_neurons=1500, dimensions=2, radius=3.0)
-
-    op_output = nengo.Node( oper_fun, size_in=2)
-
+    op_inputs = nengo.Node( [ 0.0, 0.0, 0.0 ] )
+    op_ensembles = nengo.Ensemble(n_neurons=1500, dimensions=3)
+    op_output = nengo.Node( oper_fun, size_in=3 )
     nengo.Connection(op_inputs, op_ensembles)
-
     nengo.Connection(op_ensembles, op_output)
-
+    
+    final_ensemble = nengo.Ensemble(n_neurons=1500, dimensions=3)
+    nengo.Connection(outputs, final_ensemble)
+    nengo.Connection(op_ensembles, op_output)  
+    nengo.Connection(op_output, final_ensemble)
+    
        

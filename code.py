@@ -185,8 +185,8 @@ def evaluate() :
 def append_to_expr( direction ) :
 
     global prev_append_dir
-
     global expression
+    global operator
 
 
 
@@ -200,9 +200,9 @@ def append_to_expr( direction ) :
 
     global append_flag
 
-    expression = expression + '+'
+    #expression = expression + '+'
 
-    expression = expression + str(count) + var
+    expression = expression + str(count) + '*' + var
 
     prev_append_dir = direction
 
@@ -228,21 +228,20 @@ def oper_fun(t, arr ):
 
     
 
-    if t > 0.89 and t < 0.99 :
+    if t > 0.8 and t < 0.99 :
+        operator = '*'
 
-        operator = '+'
-
-    elif t> 0.65 and t < 0.75 :
-
+    elif t> 0.5 and t < 0.7 :
         operator = '-'
 
-    elif t> 0.35 and t < 0.45 :
-
+    elif t> 0.2 and t < 0.4 :
         operator = '('
 
-    elif t> 0.01 and t < 0.2 :
-
+    elif t> -0.3 and t < 0.0 :
         operator = ')'
+        
+    elif t > -0.8 and t < -0.5 :
+        operator = '+'
 
         
 

@@ -317,7 +317,7 @@ def evaluate() :
     
 
     for key in var_map :
-
+        value = var_map[key]
         final_expression = final_expression + ('+' if value >= 0 else '')  + str(var_map[key]) + key
 
    # print(expression)
@@ -623,7 +623,3 @@ with model:
     nengo.Connection(op_ensembles, op_output)  
 
     nengo.Connection(op_output, final_ensemble)
-
-    
-
-       
